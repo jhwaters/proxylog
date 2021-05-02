@@ -77,8 +77,8 @@ func HandleEstablished(client net.Conn, server net.Conn, id int) {
 	} else {
 		serverLog := log.With().Int("id", id).Str("src", "server").Logger()
 		clientLog := log.With().Int("id", id).Str("src", "client").Logger()
-		clientLogger := &ReadWriteLogger{client, clientLog.Log, Hex}
-		serverLogger := &ReadWriteLogger{server, serverLog.Log, Hex}
+		clientLogger := &ReadWriteLogger{client, serverLog.Log, Hex}
+		serverLogger := &ReadWriteLogger{server, clientLog.Log, Hex}
 		err = Duplex(clientLogger, serverLogger)
 	}
 	logger.Log().Err(err).Msg("connection closed")
