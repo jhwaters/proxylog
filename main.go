@@ -112,9 +112,9 @@ func ProxyLog(listenAddr net.Addr, remoteAddr net.Addr) (err error) {
 	}
 }
 
-func Fatal(err interface{}) {
-	if err != nil {
-		log_.Fatal(err)
+func Fatal(err ...interface{}) {
+	if err[0] != nil {
+		log_.Fatal(err...)
 	}
 }
 
@@ -144,6 +144,9 @@ func main() {
 	flag.BoolVar(&NoLog, "n", false, "do not log data")
 	flag.BoolVar(&Verbose, "v", false, "more logging")
 	flag.Parse()
+	if flag.NArg() > 0 {
+		Fatal("unknown argument: ", flag.Arg(0))
+	}
 
 	var logFile *os.File
 	var err error
