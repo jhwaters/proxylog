@@ -126,11 +126,13 @@ func main() {
 	log_.SetFlags(0)
 	log_.SetPrefix("error: ")
 	var (
+		Listen string
+		Remote string
+		Log    string
+
 		Append  bool
-		Listen  string
-		Remote  string
 		Color   bool
-		Log     string
+		Time    bool
 		Verbose bool
 	)
 
@@ -142,6 +144,7 @@ func main() {
 	flag.BoolVar(&Hex, "x", false, "log bytes in hex format")
 	flag.BoolVar(&Color, "c", false, "log with colored console writer")
 	flag.BoolVar(&NoLog, "n", false, "do not log data")
+	flag.BoolVar(&Time, "t", false, "iso formatted time")
 	flag.BoolVar(&Verbose, "v", false, "more logging")
 	flag.Parse()
 	if flag.NArg() > 0 {
@@ -177,7 +180,11 @@ func main() {
 	} else {
 		log.Logger = log.Output(logFile)
 	}
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMicro
+	if Time {
+		zerolog.TimeFieldFormat = "2006-01-02T15:04:05.000000Z07:00"
+	} else {
+		zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMicro
+	}
 	listenAddr, err := net.ResolveTCPAddr("tcp", Listen)
 	Fatal(err)
 	connectAddr, err := net.ResolveTCPAddr("tcp", Remote)
