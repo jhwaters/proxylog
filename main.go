@@ -144,7 +144,7 @@ func main() {
 	flag.BoolVar(&Hex, "x", false, "log bytes in hex format")
 	flag.BoolVar(&Color, "c", false, "log with colored console writer")
 	flag.BoolVar(&NoLog, "n", false, "do not log data")
-	flag.BoolVar(&Time, "t", false, "iso formatted time")
+	flag.BoolVar(&Time, "t", false, "log time in iso format")
 	flag.BoolVar(&Verbose, "v", false, "more logging")
 	flag.Parse()
 	if flag.NArg() > 0 {
