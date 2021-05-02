@@ -176,7 +176,7 @@ func main() {
 		zerolog.SetGlobalLevel(zerolog.FatalLevel)
 	}
 	if Color {
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: logFile})
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: logFile, NoColor: true})
 	} else {
 		log.Logger = log.Output(logFile)
 	}
