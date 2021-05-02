@@ -136,7 +136,7 @@ func main() {
 
 	flag.StringVar(&Listen, "l", "", "listen/local address (required)")
 	flag.StringVar(&Remote, "r", "", "remote/server address (required)")
-	flag.StringVar(&Log, "o", "", "log to file instead of stderr; - for stdout")
+	flag.StringVar(&Log, "o", "", "log to file instead of stdout")
 	flag.BoolVar(&Append, "a", false, "append to log file")
 	flag.BoolVar(&Sync, "s", false, "force connections to run synchronously")
 	flag.BoolVar(&Hex, "x", false, "log bytes in hex format")
@@ -157,8 +157,6 @@ func main() {
 		Fatal("no remote address provided")
 	}
 	if Log == "" {
-		logFile = os.Stderr
-	} else if Log == "-" {
 		logFile = os.Stdout
 	} else {
 		if Append {
