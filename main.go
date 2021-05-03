@@ -93,21 +93,32 @@ func ProxyLog(listenAddr net.Addr, remoteAddr net.Addr) (err error) {
 		return err
 	}
 	defer listener.Close()
-	log.Info().
-		Str("listenAddr", listener.Addr().String()).
-		Str("remoteAddr", remoteAddr.String()).
-		Msg("listening started")
+	var listenlog zerolog.Logger
+	if Prefix != "" {
+		listenlog = log.With().
+			Str("idPrefix", Prefix).
+			Str("listenAddr", listener.Addr().String()).
+			Str("remoteAddr", remoteAddr.String()).
+			Logger()
+	} else {
+		listenlog = log.With().
+			Str("listenAddr", listener.Addr().String()).
+			Str("remoteAddr", remoteAddr.String()).
+			Logger()
+	}
+	listenlog.Info().Msg("listener started")
+
 	connectionChannel := make(chan net.Conn)
 	go AcceptConnections(connectionChannel, remoteAddr)
 	for {
 		client, err := listener.Accept()
 		if err != nil {
-			log.Error().
+			listenlog.Error().
 				Err(err).
 				Msg("accept connection failed")
 			continue
 		}
-		log.Info().
+		listenlog.Info().
 			Str("clientAddr", client.RemoteAddr().String()).
 			Msg("connection accepted")
 		connectionChannel <- client
