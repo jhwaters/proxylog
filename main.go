@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io"
 	"net"
 	"os"
@@ -65,8 +66,9 @@ func AcceptConnections(incoming <-chan net.Conn, remoteAddr net.Addr) (err error
 func HandleEstablished(client net.Conn, server net.Conn, id int) {
 	defer client.Close()
 	defer server.Close()
+	idstr := fmt.Sprintf("%s%d", Prefix, id)
 	logger := log.With().
-		Int("id", id).
+		Str("id", idstr).
 		Str("clientAddr", client.RemoteAddr().String()).
 		Str("serverAddr", server.RemoteAddr().String()).
 		Logger()
@@ -75,8 +77,8 @@ func HandleEstablished(client net.Conn, server net.Conn, id int) {
 	if NoLog {
 		err = Duplex(client, server)
 	} else {
-		serverLog := log.With().Int("id", id).Str("src", "server").Logger()
-		clientLog := log.With().Int("id", id).Str("src", "client").Logger()
+		serverLog := log.With().Str("id", idstr).Str("src", "server").Logger()
+		clientLog := log.With().Str("id", idstr).Str("src", "client").Logger()
 		clientLogger := &ReadWriteLogger{client, serverLog.Log, Hex}
 		serverLogger := &ReadWriteLogger{server, clientLog.Log, Hex}
 		err = Duplex(clientLogger, serverLogger)
@@ -121,6 +123,7 @@ func Fatal(err ...interface{}) {
 var Sync bool = false  // used in AcceptConnections
 var Hex bool = false   // used in HandleEstablished
 var NoLog bool = false // used in HandleEstablished
+var Prefix string = "" // used in HandleEstablished
 
 func main() {
 	log_.SetFlags(0)
@@ -139,6 +142,7 @@ func main() {
 	flag.StringVar(&Listen, "l", "", "listen/local address (required)")
 	flag.StringVar(&Remote, "r", "", "remote/server address (required)")
 	flag.StringVar(&Log, "o", "", "log to file instead of stdout")
+	flag.StringVar(&Prefix, "p", "", "id prefix")
 	flag.BoolVar(&Append, "a", false, "append to log file")
 	flag.BoolVar(&Sync, "s", false, "force connections to run synchronously")
 	flag.BoolVar(&Hex, "x", false, "log bytes in hex format")
