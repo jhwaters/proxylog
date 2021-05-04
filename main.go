@@ -68,7 +68,7 @@ func HandleEstablished(client net.Conn, server net.Conn, id int) {
 	defer server.Close()
 	idstr := fmt.Sprintf("%s%d", Prefix, id)
 	logger := log.With().
-		Str("id", idstr).
+		Str("session", idstr).
 		Str("clientAddr", client.RemoteAddr().String()).
 		Str("serverAddr", server.RemoteAddr().String()).
 		Logger()
@@ -77,8 +77,14 @@ func HandleEstablished(client net.Conn, server net.Conn, id int) {
 	if NoLog {
 		err = Duplex(client, server)
 	} else {
-		serverLog := log.With().Str("id", idstr).Str("src", "server").Logger()
-		clientLog := log.With().Str("id", idstr).Str("src", "client").Logger()
+		serverLog := log.With().
+			Str("session", idstr).
+			Str("src", "server").
+			Logger()
+		clientLog := log.With().
+			Str("session", idstr).
+			Str("src", "client").
+			Logger()
 		clientLogger := &ReadWriteLogger{client, serverLog.Log, Hex}
 		serverLogger := &ReadWriteLogger{server, clientLog.Log, Hex}
 		err = Duplex(clientLogger, serverLogger)
@@ -153,7 +159,7 @@ func main() {
 	flag.StringVar(&Listen, "l", "", "listen/local address (required)")
 	flag.StringVar(&Remote, "r", "", "remote/server address (required)")
 	flag.StringVar(&Log, "o", "", "log to file instead of stdout")
-	flag.StringVar(&Prefix, "p", "", "set id prefix")
+	flag.StringVar(&Prefix, "p", "", "set session prefix")
 	flag.BoolVar(&Append, "a", false, "append to log file")
 	flag.BoolVar(&Sync, "s", false, "force connections to run synchronously")
 	flag.BoolVar(&Hex, "x", false, "log bytes in hex format")
