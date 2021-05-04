@@ -37,7 +37,7 @@ The `session` field increments with every connection but will be reset with each
 > proxylog -h
 Usage of proxylog:
   -a	append to log file
-  -c	log with colored console writer
+  -c	log with console writer
   -l string
     	listen/local address (required)
   -n	do not log data

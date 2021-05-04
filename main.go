@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"runtime"
 
 	log_ "log"
 
@@ -163,7 +164,7 @@ func main() {
 	flag.BoolVar(&Append, "a", false, "append to log file")
 	flag.BoolVar(&Sync, "s", false, "force connections to run synchronously")
 	flag.BoolVar(&Hex, "x", false, "log bytes in hex format")
-	flag.BoolVar(&Color, "c", false, "log with colored console writer")
+	flag.BoolVar(&Color, "c", false, "log with console writer")
 	flag.BoolVar(&NoLog, "n", false, "do not log data")
 	flag.BoolVar(&Time, "t", false, "log time in iso format")
 	flag.BoolVar(&Verbose, "v", false, "log listener status")
@@ -197,7 +198,11 @@ func main() {
 		zerolog.SetGlobalLevel(zerolog.FatalLevel)
 	}
 	if Color {
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: logFile, NoColor: true})
+		if runtime.GOOS == "windows" {
+			log.Logger = log.Output(zerolog.ConsoleWriter{Out: logFile, NoColor: true})
+		} else {
+			log.Logger = log.Output(zerolog.ConsoleWriter{Out: logFile, NoColor: false})
+		}
 	} else {
 		log.Logger = log.Output(logFile)
 	}
